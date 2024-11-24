@@ -4,7 +4,7 @@
 Intended to become a drop-in replacement for the Animation Tree in [Godot](https://github.com/godotengine/godot), the Scriptable Animation Player (SAP) aims to give you more control over the animations of your 3D creations.
 
 ## State of the extension
-This project is in an incredibly early state, expect bugs, breaking changes, etc. Think carefully before commiting to using it.
+This project is in an incredibly early state, expect bugs, breaking changes, etc. Think carefully before committing to using it.
 
 Current Support:
 + Position, Rotation & Scale of bones
@@ -22,7 +22,7 @@ Planned:
 ## Compatibility
 + The GDExtension is built on Godot 4.3
 + Currently only releasing pre-builts for windows, source code is available for other platforms
-+ If you require an earlier version, the register_types.cpp file will need some tweeks & a rebuild of the extension
++ If you require an earlier version, the register_types.cpp file will need some tweaks & a rebuild of the extension
 
 ## Current classes/types and their use
 + ScriptableAnimationPlayer - The main class and only actual node, attach to a character, point the skeleton & animation player variables to your target model to get started!
@@ -71,9 +71,12 @@ func _process(delta: float) -> void:
 ```
 
 ## How to use in GDExtension (C++)
-+ The best way is probably to drop the "SAP" source code folder into your own GDExtension's src folder
++ Replace the empty "godot-cpp" folder with the stable release of [Godot's provided one](https://github.com/godotengine/godot-cpp), 
++ The best method is to drop the "SAP" source code folder (in the src folder) into your own GDExtension's src folder
++ Either add the GDREGISTERs & includes to your own "register_types.cpp", or copy that as well
 + Ensure your SConstruct file's sources list includes the directory, or use an SConstruct file like the one included that automatically finds subfolders
 + Create a new class that inherits from the ScriptableAnimationPlayer class, example below (though you'd probably want to make a header & source file)
++ Import into "register_types.cpp" and register your new class with GDREGISTER_RUNTIME_CLASS()
 + Compile, add your new node to your animated character's root object, link "Player Path" & "Skeleton Path"
 ```
 #pragma once
