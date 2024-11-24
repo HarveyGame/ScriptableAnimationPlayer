@@ -4,7 +4,9 @@
 Intended to become an alternative for the Animation Tree in [Godot](https://github.com/godotengine/godot), the Scriptable Animation Player (SAP) aims to give you more control over the animations of your 3D creations.
 
 ## Current Release
-The current release is v0.1, available to download pre-compiled (so you can just drop it into your godot project) [HERE](https://github.com/HarveyGame/ScriptableAnimationPlayer/releases/tag/Pre-Alpha)
+[HERE](https://github.com/HarveyGame/ScriptableAnimationPlayer/releases/tag/Pre-Alpha)
+
+The current release is v0.1, available to download pre-compiled (so you can just drop it into your godot project)
 
 ## State of the extension
 This project is in an incredibly early state, expect bugs, breaking changes, etc. I wouldn't recommend committing to using it 100% until more testing is done and more features added.
