@@ -13,6 +13,7 @@ Current Support:
 Currently in Development:
 + Typical Blend Space 2D (I'm not super keen on the current radial option)
 + Root Motion
++ Wiki
 
 Planned:
 + One shot automation
@@ -33,7 +34,7 @@ Planned:
 ## How to use in GDScript:
 + Drop the "ScriptableAnimationPlayer" folder into your project folder
 + open your project 
-+ add the "ScriptableAnimationPlayer" under your player
++ add the "ScriptableAnimationPlayer" under your animated character's root object, same as you would an animation tree
 + In the Inspector, set the "Player Path" and "Skeleton Path" to point to your models "AnimationPlayer" and "Skeleton3D" nodes
 + Add a script & edit it for your character, here's an example script
 ```
@@ -43,8 +44,10 @@ extends ScriptableAnimationPlayer
 @onready var blend_space2D := get_blend_space2D_radial()
 
 func _ready() -> void:	
+
 	#quickly print out the list of animations
 	print(get_animation_list())
+
 	#add the animations at their respective positions
 	blend_space2D.add_point(Vector2(0,0), "IdleHappy")
 	blend_space2D.add_point(Vector2(0,1), "RunForward")
@@ -66,3 +69,43 @@ func _process(delta: float) -> void:
 	#finally, apply the pose
 	apply_pose(pose)
 ```
+
+## How to use in GDExtension (C++)
++ The best way is probably to drop the "SAP" source code folder into your own GDExtension's src folder
++ Ensure your SConstruct file's sources list includes the directory, or use an SConstruct file like the one included that automatically finds subfolders
++ Create a new class that inherits from the ScriptableAnimationPlayer class, example below (though you'd probably want to make a header & source file)
++ Compile, add your new node to your animated character's root object, link "Player Path" & "Skeleton Path"
+```
+#pragma once
+#include "SAP/ScriptableAnimationPlayer.hpp"
+
+namespace godot
+{
+    class MySAP : public ScriptableAnimationPlayer
+    {
+    protected:
+        GDCLASS(MySAP, ScriptableAnimationPlayer)
+        static void _bind_methods() {};
+
+    public:
+        MySAP() {};
+        ~MySAP() {};
+
+        void _ready() override
+        {
+            runFwd = GetAnimation("RunForward");
+            idle = GetAnimation("IdleHappy");
+        }
+
+        void _process(double delta) override
+        {
+            auto pose = idle->Sample(delta);
+            pose = pose->Blend(runFwd->Sample(delta), .5);
+            ApplyPose(pose);
+        }
+
+        SAPAnimation *runFwd, *idle;
+    };
+}
+```
+while you do have access to the internal versions of these classes (such as SAPPoseInt for SAPPose), it is recommended to not use those.
