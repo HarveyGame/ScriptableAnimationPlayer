@@ -16,11 +16,11 @@ Current Support:
 + Method Call tracks
 + Blending Animations
 + Blending Poses
++ [Wiki](https://github.com/HarveyGame/ScriptableAnimationPlayer/wiki)
 
 Currently in Development:
 + Typical Blend Space 2D (I'm not super keen on the current radial option)
 + Root Motion
-+ Wiki
 
 Planned:
 + One shot automation
