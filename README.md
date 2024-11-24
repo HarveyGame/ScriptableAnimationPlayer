@@ -1,14 +1,16 @@
 # Scriptable Animation Player for the Godot engine
 
 ## A new 3D animation player
-Intended to become a drop-in replacement for the Animation Tree in [Godot](https://github.com/godotengine/godot), the Scriptable Animation Player (SAP) aims to give you more control over the animations of your 3D creations.
+Intended to become an alternative for the Animation Tree in [Godot](https://github.com/godotengine/godot), the Scriptable Animation Player (SAP) aims to give you more control over the animations of your 3D creations.
 
 ## State of the extension
-This project is in an incredibly early state, expect bugs, breaking changes, etc. Think carefully before committing to using it.
+This project is in an incredibly early state, expect bugs, breaking changes, etc. I wouldn't recommend committing to using it 100% until more testing is done and more features added.
 
 Current Support:
 + Position, Rotation & Scale of bones
 + Method Call tracks
++ Blending Animations
++ Blending Poses
 
 Currently in Development:
 + Typical Blend Space 2D (I'm not super keen on the current radial option)
