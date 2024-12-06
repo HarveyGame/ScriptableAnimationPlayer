@@ -4,9 +4,9 @@
 Intended to become an alternative for the Animation Tree in [Godot](https://github.com/godotengine/godot), the Scriptable Animation Player (SAP) aims to give you more control over the animations of your 3D creations.
 
 ## Current Release
-[HERE](https://github.com/HarveyGame/ScriptableAnimationPlayer/releases/tag/Pre-Alpha)
+[HERE](https://github.com/HarveyGame/ScriptableAnimationPlayer/releases/tag/v0.2-pre-release)
 
-The current release is v0.1, available to download pre-compiled (so you can just drop it into your godot project)
+The current release is v0.2, available to download pre-compiled (so you can just drop it into your godot project)
 
 ## State of the extension
 This project is in an incredibly early state, expect bugs, breaking changes, etc. I wouldn't recommend committing to using it 100% until more testing is done and more features added.
@@ -17,19 +17,19 @@ Current Support:
 + Blending Animations
 + Blending Poses
 + [Wiki](https://github.com/HarveyGame/ScriptableAnimationPlayer/wiki)
-
-Currently in Development:
-+ Typical Blend Space 2D (I'm not super keen on the current radial option)
-+ Root Motion
++ Typical Blend Space 2D
++ Root Motion (Position)
++ One shot automation
 
 Planned:
-+ One shot automation
 + Audio tracks
++ Root Motion (Rotation)
++ Masks
 
 ## Compatibility
 + The GDExtension is built on Godot 4.3
 + Currently only releasing pre-builts for windows, source code is available for other platforms
-+ If you require an earlier version, the register_types.cpp file will need some tweaks & a rebuild of the extension
++ If you require support for an earlier version, the register_types.cpp file will need some tweaks & a rebuild of the extension
 
 ## Current classes/types and their use
 + ScriptableAnimationPlayer - The main class and only actual node, attach to a character, point the skeleton & animation player variables to your target model to get started!
@@ -48,7 +48,7 @@ Planned:
 extends ScriptableAnimationPlayer
 
 @onready var attack1 := get_animation("AttackSwing1")
-@onready var blend_space2D := get_blend_space2D_radial()
+@onready var blend_space2D := get_blend_space2D()
 
 func _ready() -> void:	
 
