@@ -36,7 +36,8 @@ Planned:
 + SAPPose - The pose of your character this frame, can be blended with other poses to achieve your desired final pose
 + SAPAnimation - The animation you will sample from
 + SAPBlendSpace1D - a 1 dimensional blend space, add points and sample between them
-+ SAPBlendSpace2DRadial - a 2D version of the 1D blend space, add points in 2D and pass between multiple rings of 1D Blend Spaces, useful for movement
++ SAPBlendSpace2D - a 2D version of the 1D blend space, add points in 2D, useful for movement
++ SAPOneShot - controls an animation to easily fire off the animation smoothly.
 
 ## How to use in GDScript:
 + Drop the "ScriptableAnimationPlayer" folder into your project folder
