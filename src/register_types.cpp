@@ -17,8 +17,11 @@ void initialize_SAP_module(ModuleInitializationLevel p_level)
     GDREGISTER_RUNTIME_CLASS(ScriptableAnimationPlayer);
     GDREGISTER_RUNTIME_CLASS(SAPAnimation);
     GDREGISTER_RUNTIME_CLASS(SAPPose);
+    GDREGISTER_RUNTIME_CLASS(SAPPoseWeighted);
     GDREGISTER_RUNTIME_CLASS(SAPBlendSpace1D);
     GDREGISTER_RUNTIME_CLASS(SAPBlendSpace2DRadial);
+    GDREGISTER_RUNTIME_CLASS(SAPBlendSpace2D);
+    GDREGISTER_RUNTIME_CLASS(SAPOneShot);
 }
 
 void uninitialize_SAP_module(ModuleInitializationLevel p_level)

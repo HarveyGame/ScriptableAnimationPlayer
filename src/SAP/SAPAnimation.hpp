@@ -51,7 +51,11 @@ namespace godot
         SAPPoseInt Sample(const double &delta = -1);
 
         Ref<Animation> anim;
+        Vector3 lastRMBPos, rootPosDelta;
         double time = 0;
+        double lastTime = 0;
+        bool firstSample = true;
+        bool isPartOfSpace = false; // is part of a greater structure (Blend space, one shot, etc)
         unsigned char lastUpdateFrame = 128;
         Animation::LoopMode loopmode;
         class ScriptableAnimationPlayer *parent;

@@ -6,6 +6,7 @@
 #include <godot_cpp/classes/skeleton3d.hpp>
 #include <godot_cpp/classes/engine.hpp>
 #include <godot_cpp/classes/animation_player.hpp>
+#include <godot_cpp/classes/scene_tree.hpp>
 
 using namespace godot;
 
@@ -14,7 +15,8 @@ void godot::SAPAnimation::_bind_methods()
     ClassDB::bind_method(D_METHOD("get_index"), &SAPAnimation::GetIndex);
     ClassDB::bind_method(D_METHOD("set_time", "new time", "clear update frame"), &SAPAnimation::SetTime, DEFVAL(0), DEFVAL(false));
     ClassDB::bind_method(D_METHOD("set_loop_mode"), &SAPAnimation::SetLoopMode);
-    ClassDB::bind_method(D_METHOD("add_method_key", "time", "path", "method", "parameters"), &SAPAnimation::AddMethodKey);
+    ClassDB::bind_method(D_METHOD("add_method_key", "time", "path from animation player", "method name", "parameters"), &SAPAnimation::AddMethodKey,
+                         DEFVAL(0.0), DEFVAL("../"), DEFVAL(""), DEFVAL(Array()));
 
     ClassDB::bind_method(D_METHOD("sample", "delta"), &SAPAnimation::Sample, DEFVAL(-1));
 }
@@ -98,9 +100,16 @@ void godot::SAPAnimationInt::Process(const double &delta)
     double lastTime = time;
     time += delta;
 
+    if (methodKeys.size() == 0)
+        return;
+
+    // avoid clamping looptimes
+    double looptime = loopmode == Animation::LOOP_NONE ? time : GetLoopedTime(time);
+    double lastlooptime = loopmode == Animation::LOOP_NONE ? lastTime : GetLoopedTime(lastTime);
+
     for (const auto &mkey : methodKeys)
     {
-        if ((int)Math::sign(GetLoopedTime(lastTime) - mkey.time) == (int)Math::sign(GetLoopedTime(time) - mkey.time))
+        if ((int)Math::sign(lastlooptime - mkey.time) == (int)Math::sign(looptime - mkey.time))
             continue;
 
         Node *n = parent->player->get_parent()->get_node<Node>(mkey.path);
@@ -150,6 +159,9 @@ double godot::SAPAnimationInt::GetLoopedTime(const double &t)
     case Animation::LOOP_PINGPONG:
         return Math::pingpong(t, anim->get_length());
 
+    case Animation::LOOP_NONE:
+        return Math::clamp(t, 0.0, anim->get_length());
+
     default:
         return t;
     }
@@ -157,6 +169,7 @@ double godot::SAPAnimationInt::GetLoopedTime(const double &t)
 
 SAPPoseInt godot::SAPAnimationInt::Sample(const double &delta)
 {
+
     if (delta >= 0)
         Process(delta);
 
@@ -173,37 +186,71 @@ SAPPoseInt godot::SAPAnimationInt::Sample(const double &delta)
     if (pose.bones.size() == 0)
         return SAPPoseInt();
 
+    int rootBoneId = parent->rootMotionBone;
+
+    Vector3 npos;
+    int boneID;
     for (int trackNo = 0; trackNo < anim->get_track_count(); ++trackNo)
     {
         auto trackPath = (String)anim->track_get_path(trackNo);
-        if (!trackPath.contains(":"))
-        {
-            // not a bone, may be root motion
-            // PRINT("TrackNo ", trackNo, ", type ", anim->track_get_type(trackNo), ", path", (String)anim->track_get_path(trackNo));
-            continue;
-        }
 
-        auto path = trackPath.split(":");
-        auto boneID = parent->skele->find_bone(path[path.size() - 1]);
-        if (boneID == -1)
+        // boneID = parent->skele->find_bone(trackPath.substr(bonePathLength, trackPath.length() - bonePathLength));
+        boneID = parent->boneIdTable[trackPath] - 1; // subtract 1 for error catching (now boneID -1 = error!)
+
+        if (boneID == -1) // if not a valid bone track
         {
-            PRINTERR("Anim: Failed to identify bone ", path);
+            switch (anim->track_get_type(trackNo))
+            {
+            case Animation::TrackType::TYPE_POSITION_3D:
+            case Animation::TrackType::TYPE_ROTATION_3D:
+            case Animation::TrackType::TYPE_SCALE_3D:
+
+                // PRINTERR("Anim: Failed to identify bone ", trackPath);
+                break;
+                // default:
+                //     // is either handled at processing (like method) or unhandled atm
+                //     break;
+            }
             continue;
         }
 
         switch (anim->track_get_type(trackNo))
         {
         case Animation::TrackType::TYPE_POSITION_3D:
-            pose.bones[boneID].pos = anim->position_track_interpolate(trackNo, ttime);
+            if (boneID != rootBoneId)
+            {
+                pose.bones[boneID].pos = anim->position_track_interpolate(trackNo, ttime);
+                break;
+            }
+
+            // root motion bone
+            if (firstSample)
+                lastRMBPos = anim->position_track_interpolate(trackNo, 0);
+
+            npos = anim->position_track_interpolate(trackNo, ttime);
+            if (lastTime > ttime)
+            {
+                rootPosDelta = anim->position_track_interpolate(trackNo, anim->get_length()) - anim->position_track_interpolate(trackNo, lastTime);
+                rootPosDelta += npos - anim->position_track_interpolate(trackNo, 0);
+            }
+            else
+                rootPosDelta = npos - lastRMBPos;
+
+            pose.rootPosDelta = rootPosDelta;
+            lastRMBPos = npos;
             break;
+
         case Animation::TrackType::TYPE_ROTATION_3D:
             pose.bones[boneID].rot = anim->rotation_track_interpolate(trackNo, ttime);
             break;
+
         case Animation::TrackType::TYPE_SCALE_3D:
             pose.bones[boneID].scale = anim->scale_track_interpolate(trackNo, ttime);
             break;
         }
     }
 
+    firstSample = false;
+    lastTime = GetLoopedTime(time);
     return pose;
 }

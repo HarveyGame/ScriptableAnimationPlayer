@@ -18,10 +18,10 @@ void godot::SAPBlendSpace1D::_bind_methods()
 void godot::SAPBlendSpace1D::AddPoint(double pos, String animName)
 {
     auto &inter = parent->blendSpace1Ds[index];
-    auto ani = parent->GetAnimation(animName);
-    if (ani->index < 0)
+    auto anim = parent->GetAnimation(animName);
+    if (anim->index < 0)
         return;
-    inter.AddPoint(pos, parent->animations[ani->index]);
+    inter.AddPoint(pos, parent->animations[anim->index]);
 }
 
 SAPPose *godot::SAPBlendSpace1D::Sample(double pos, double delta)
@@ -35,6 +35,7 @@ SAPPose *godot::SAPBlendSpace1D::Sample(double pos, double delta)
 
 void godot::SAPBlendSpace1DInt::AddPoint(double pos, SAPAnimationInt anim)
 {
+    anim.isPartOfSpace = true;
     points.push_back(Point(pos, anim));
 }
 

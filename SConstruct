@@ -53,3 +53,4 @@ else:
     )
     
 Default(library) # type: ignore
+print("Flags:",env['CXXFLAGS'])

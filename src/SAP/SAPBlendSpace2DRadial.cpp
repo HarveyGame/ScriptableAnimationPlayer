@@ -53,12 +53,14 @@ void godot::SAPBlendSpace2DRadialInt::AddPoint(Vector2 pos, SAPAnimationInt anim
     {
         if (Math::abs(d - r.distance) < .001)
         {
+            anim.isPartOfSpace = true;
             r.space.AddPoint(p, anim);
             return;
         }
     }
 
     SAPBlendSpace1DInt bs;
+    anim.isPartOfSpace = true;
     bs.AddPoint(p, anim);
     rings.push_back(Ring(d, bs));
     maxLength = Math::max(maxLength, d);
